@@ -1,7 +1,7 @@
 # Gitignore for Vivado
 
 # Simulation (unneeded for now)
-*.sim/*
+*/*.sim/*
 
 # gitignore template for Xilinx Vivado Design Suite
 # website: https://www.xilinx.com/support/download.html
