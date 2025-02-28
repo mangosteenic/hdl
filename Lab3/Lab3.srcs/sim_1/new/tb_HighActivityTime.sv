@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 02/27/2025 09:59:09 PM
+// Create Date: 02/28/2025 01:15:54 PM
 // Design Name: 
-// Module Name: tb_StepCounter
+// Module Name: tb_HighActivityTime
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,36 +20,33 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module tb_StepCounter(
-    
+module tb_HighActivityTime(
+
     );
 
     /*
-    module StepCounter(
-    input clk, // Clock in (unused?)
-    input rst, // Reset in - active HIGH
-    input pulse, // Pulse in
-    output reg [31:0] stepcount_raw, // Raw stepcount
-    output SI // Saturation status
+    module HighActivityTime(
+    input clk,
+    input rst,
+    input step_pulse,
+    output reg [31:0] high_activity_time_secs
     );
     */
 
     // Inputs
     reg clk = 0;
     reg rst = 1;
-    reg pulse = 0;
+    reg step_pulse = 0;
 
     // Outputs
-    wire [31:0] stepcount_raw;
-    wire SI;
+    wire [31:0] high_activity_time_secs;
     
     // Instantiate dut
-    StepCounter dut (
+    HighActivityTime #(.CLOCK_SPEED(100)) dut (
         .clk(clk),
         .rst(rst),
-        .pulse(pulse),
-        .stepcount_raw(stepcount_raw),
-        .SI(SI)
+        .step_pulse(step_pulse),
+        .high_activity_time_secs(high_activity_time_secs)
     );
     
     initial begin
@@ -57,29 +54,23 @@ module tb_StepCounter(
 
         forever begin
             // Clock generation
-            #5
+            #1
             clk = ~clk;
-            pulse = ~pulse;
+            step_pulse = ~step_pulse;
         end
 
     end
 
     always @(*) begin
-        $display("Stepcount: %d, SI: %d", stepcount_raw, SI);
-        if(stepcount_raw >= 9999) begin
-            // $display("Saturation");
-            assert(SI == 1);
-        end
+        $display("high_activity_time_secs: %d", high_activity_time_secs);
 
         if($time >= 20000000) begin
             // Test reset
             rst = 1;
             #100
-            assert(stepcount_raw == 0);
-            assert(SI == 0);
+            assert(high_activity_time_secs == 0);
             #100
             $finish;
         end
     end
-
 endmodule
