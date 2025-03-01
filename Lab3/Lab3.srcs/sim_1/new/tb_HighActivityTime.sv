@@ -42,7 +42,7 @@ module tb_HighActivityTime(
     wire [31:0] high_activity_time_secs;
     
     // Instantiate dut
-    HighActivityTime #(.CLOCK_SPEED(100)) dut (
+    HighActivityTime #(.CLOCK_SPEED(10), .STEP_THRESHOLD(5)) dut (
         .clk(clk),
         .rst(rst),
         .step_pulse(step_pulse),
