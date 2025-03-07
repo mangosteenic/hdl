@@ -1,0 +1,16 @@
+0.7
+2020.1
+May 27 2020
+20:09:33
+C:/Users/hanna/460M/lab_3/project_1/project_1.sim/sim_1/behav/xsim/glbl.v,1590624368,verilog,,,,glbl,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sim_1/new/tb_top.v,1741382449,verilog,,,,tb_top,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/DistanceCovered.v,1741366750,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/HighActivityTime.v,,DistanceCovered,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/HighActivityTime.v,1741367549,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/StepCounter.v,,HighActivityTime,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/StepCounter.v,1741374144,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/bcd_seven.v,,StepCounter,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/bcd_seven.v,1741362950,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/display.v,,bcd_seven,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/display.v,1741367618,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/fitbit_tracker.v,,display,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/fitbit_tracker.v,1741374193,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/over_32.v,,fitbit_tracker,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/over_32.v,1741367375,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/pulse_gen.v,,over_32,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/pulse_gen.v,1741382610,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/time_mux_state_machine.v,,pulse_gen,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/time_mux_state_machine.v,1741361457,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/top.v,,time_mux_state_machine,,,,,,,,
+C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/top.v,1741375801,verilog,,C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sim_1/new/tb_top.v,,top,,,,,,,,
