@@ -34,13 +34,13 @@ module InputModule
     // Slow clock generation (for debounce)
     // Clock divider for 50ms
     reg debounce_clk = 0;
-    reg [32:0] clock_count = 0;
+    reg [31:0] clock_count = 0;
     always @(posedge clk) begin
         if(clock_count >= CLOCKS_PER_50MS) begin
             debounce_clk <= 1;
             clock_count <= 0;
         end else begin
-            debounce_clk <= 1;
+            debounce_clk <= 0;
             clock_count <= clock_count + 1;
         end
     end

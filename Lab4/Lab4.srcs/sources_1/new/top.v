@@ -36,7 +36,7 @@ module top
 
     wire [15:0] seconds_left;
 
-    InputModule #(.CLOCKS_PER_50MS(CLOCK_FREQ * 0.05)) input_module (btnU, btnL, btnR, btnD, sw, CLK, add_10, add_180, add_200, add_550, rst_to_10, rst_to_205);
+    InputModule #(.CLOCKS_PER_50MS(5000000)) input_module (btnU, btnL, btnR, btnD, sw, CLK, add_10, add_180, add_200, add_550, rst_to_10, rst_to_205);
 
     ControllerModule #(.CLOCK_FREQ(CLOCK_FREQ)) controller_module (CLK, add_10, add_180, add_200, add_550, rst_to_10, rst_to_205, seconds_left);
 

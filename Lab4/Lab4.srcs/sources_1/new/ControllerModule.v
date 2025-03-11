@@ -37,7 +37,13 @@ module ControllerModule
     reg [31:0] clock_count = 0;
     always @(posedge clk) begin
         if(clock_count >= CLOCK_FREQ) begin
-            do_sub <= 1;
+            if(second_count != 0) begin
+                do_sub <= 1;
+            end
+            else begin
+                do_sub <= 0;
+            end
+             
             clock_count <= 0;
         end else begin
             do_sub <= 0;
@@ -45,7 +51,8 @@ module ControllerModule
         end
     end
 
-    always @(posedge clk or posedge rst_to_10 or posedge rst_to_205) begin
+    //  or posedge rst_to_10 or posedge rst_to_205
+    always @(posedge clk) begin
         if(rst_to_205) begin
             second_count <= 205;
         end
