@@ -23,9 +23,9 @@
 module ControllerModule
     #(parameter CLOCK_FREQ = 100000000)
     (
+    input clk,
     input add_10, add_180, add_200, add_550,
     input rst_to_10, rst_to_205,
-    input clk,
     output reg [15:0] second_count = 0
     );
     
@@ -34,7 +34,7 @@ module ControllerModule
 
     // Clock divider for seconds
     reg do_sub = 0;
-    reg [32:0] clock_count = 0;
+    reg [31:0] clock_count = 0;
     always @(posedge clk) begin
         if(clock_count >= CLOCK_FREQ) begin
             do_sub <= 1;

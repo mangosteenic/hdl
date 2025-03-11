@@ -20,7 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module top(
+module top
+    #(parameter CLOCK_FREQ = 100000000)
+    (
     input CLK,
     input btnU, btnL, btnR, btnD,
     input [1:0] sw,
@@ -30,13 +32,14 @@ module top(
     
     wire add_10, add_180, add_200, add_550;
     wire rst_to_10, rst_to_205;
+    wire dp = 0;
 
     wire [15:0] seconds_left;
 
-    InputModule input_module(btnU, btnL, btnR, btnD, sw, CLK, add_10, add_180, add_200, add_550, rst_to_10, rst_to_205);
+    InputModule #(.CLOCKS_PER_50MS(CLOCK_FREQ * 0.05)) input_module (btnU, btnL, btnR, btnD, sw, CLK, add_10, add_180, add_200, add_550, rst_to_10, rst_to_205);
 
-    ControllerModule controller_module(add_10, add_180, add_200, add_550, rst_to_10, rst_to_205, clk, seconds_left);
+    ControllerModule #(.CLOCK_FREQ(CLOCK_FREQ)) controller_module (CLK, add_10, add_180, add_200, add_550, rst_to_10, rst_to_205, seconds_left);
 
-    OutputModule output_module(CLK, seconds_left, an, sseg);
+    OutputModule output_module(CLK, seconds_left, an, dp, sseg);
     
 endmodule

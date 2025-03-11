@@ -31,12 +31,15 @@ module OutputModule(
     
     wire [6:0] in0, in1, in2, in3;
     wire slow_clk;
+
+    wire [3:0] bcd_1, bcd_2, bcd_3, bcd_4;
+    bin_to_bcd bin_conv(clk, in, bcd_1, bcd_2, bcd_3, bcd_4);
     
     // Instantiate hexto7segment decoder
-    hexto7segment c1 (.x(in[3:0]), .out(in0));
-    hexto7segment c2 (.x(in[7:4]), .out(in1));
-    hexto7segment c3 (.x(in[11:8]), .out(in2));
-    hexto7segment c4 (.x(in[15:12]), .out(in3));
+    hexto7segment c1 (.x(bcd_1), .out(in0));
+    hexto7segment c2 (.x(bcd_2), .out(in1));
+    hexto7segment c3 (.x(bcd_3), .out(in2));
+    hexto7segment c4 (.x(bcd_4), .out(in3));
     
     // Instantiate clock divider
     clkdiv c5 (.clk(clk), .reset(reset), .clk_out_2pow(slow_clk));
