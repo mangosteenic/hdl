@@ -26,7 +26,8 @@ module ControllerModule
     input clk,
     input add_10, add_180, add_200, add_550,
     input rst_to_10, rst_to_205,
-    output reg [15:0] second_count = 0
+    output reg [15:0] second_count = 0,
+    output reg output_enable = 0
     );
     
     wire do_add = (add_550 || add_200 || add_180 || add_10);
@@ -70,6 +71,16 @@ module ControllerModule
             else begin
                 second_count <= second_count;
             end
+        end
+
+        if(second_count == 0) begin
+            output_enable <= (clock_count >= (CLOCK_FREQ / 2));
+        end
+        else if(second_count <= 200) begin
+            output_enable <= ~second_count[0];
+        end
+        else begin
+            output_enable <= 1'b1;
         end
     end
 

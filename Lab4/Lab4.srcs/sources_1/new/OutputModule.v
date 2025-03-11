@@ -21,6 +21,7 @@
 
 module OutputModule(
     input clk,
+    input enable,
     input [15:0] in,
     output [3:0] an,
     output dp,
@@ -31,6 +32,7 @@ module OutputModule(
     
     wire [6:0] in0, in1, in2, in3;
     wire slow_clk;
+    // wire slow_clock_gate = slow_clk & enable;
 
     wire [3:0] bcd_1, bcd_2, bcd_3, bcd_4;
     bin_to_bcd bin_conv(clk, in, bcd_1, bcd_2, bcd_3, bcd_4);
@@ -46,6 +48,7 @@ module OutputModule(
     
     time_mux_state_machine c6(
         .clk(slow_clk),
+        .enable(enable),
         .reset(reset),
         .in0(in0),
         .in1(in1),
@@ -89,6 +92,7 @@ endmodule
 
 module time_mux_state_machine(
     input clk,
+    input enable,
     input reset,
     input [6:0] in0,
     input [6:0] in1,
@@ -112,26 +116,33 @@ module time_mux_state_machine(
     end
     
     always @(*) begin // Multiplexer
-        case(state)
-            2'b00: sseg = in0;
-            2'b01: sseg = in1;
-            2'b10: sseg = in2;
-            2'b11: sseg = in3;
-        endcase
-        
-        case(state)
-            2'b00: dp = 1'b1;
-            2'b01: dp = 1'b1;
-            2'b10: dp = 1'b0;
-            2'b11: dp = 1'b1;
-        endcase
+        if(!enable) begin
+            sseg <= 7'b1111111;
+            an <= 7'b1111111;
+            dp <= 7'b1111111;
+        end
+        else begin
+            case(state)
+                2'b00: sseg = in0;
+                2'b01: sseg = in1;
+                2'b10: sseg = in2;
+                2'b11: sseg = in3;
+            endcase
+            
+            case(state)
+                2'b00: dp = 1'b1;
+                2'b01: dp = 1'b1;
+                2'b10: dp = 1'b0;
+                2'b11: dp = 1'b1;
+            endcase
 
-        case(state) // Decoder
-            2'b00: an = 4'b1110;
-            2'b01: an = 4'b1101;
-            2'b10: an = 4'b1011;
-            2'b11: an = 4'b0111;
-        endcase
+            case(state) // Decoder
+                2'b00: an = 4'b1110;
+                2'b01: an = 4'b1101;
+                2'b10: an = 4'b1011;
+                2'b11: an = 4'b0111;
+            endcase
+        end
     end
     
     always @(posedge clk or posedge reset) begin

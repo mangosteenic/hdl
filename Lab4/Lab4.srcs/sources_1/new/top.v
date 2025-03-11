@@ -32,14 +32,15 @@ module top
     
     wire add_10, add_180, add_200, add_550;
     wire rst_to_10, rst_to_205;
+    wire output_enable;
     wire dp = 0;
 
     wire [15:0] seconds_left;
 
     InputModule #(.CLOCKS_PER_50MS(5000000)) input_module (btnU, btnL, btnR, btnD, sw, CLK, add_10, add_180, add_200, add_550, rst_to_10, rst_to_205);
 
-    ControllerModule #(.CLOCK_FREQ(CLOCK_FREQ)) controller_module (CLK, add_10, add_180, add_200, add_550, rst_to_10, rst_to_205, seconds_left);
+    ControllerModule #(.CLOCK_FREQ(CLOCK_FREQ)) controller_module (CLK, add_10, add_180, add_200, add_550, rst_to_10, rst_to_205, seconds_left, output_enable);
 
-    OutputModule output_module(CLK, seconds_left, an, dp, sseg);
+    OutputModule output_module(CLK, output_enable, seconds_left, an, dp, sseg);
     
 endmodule
