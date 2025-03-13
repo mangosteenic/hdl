@@ -29,14 +29,14 @@ module pulse_gen
     
     input CLK, RESET, START;
     input [1:0] MODE;
-    output pulse;
+    output reg pulse;
     
     reg [31:0] counter;
     reg [31:0] freq;
     reg [31:0] seconds;
     reg [31:0] cycles;
     
-    reg pulse_int = 0;
+    // reg pulse_int = 0;
     
     always @ (posedge CLK or posedge RESET)
     begin
@@ -46,7 +46,7 @@ module pulse_gen
             freq <= 0;
             seconds <= 0;
             cycles <= 0;
-            pulse_int <= 0;
+            pulse <= 0;
         end
         else if (START)
         begin
@@ -79,7 +79,7 @@ module pulse_gen
     
             if (counter >= (100000000 / (2 * freq))) begin
                 counter <= 1;
-                pulse_int <= ~pulse_int;
+                pulse <= ~pulse;
             end
             else begin
                 counter <= counter + 1;
@@ -91,10 +91,10 @@ module pulse_gen
             freq <= freq;
             seconds <= seconds;
             cycles <= cycles;
-            pulse_int <= pulse_int;
+            pulse <= pulse;
         end
     end
     
-    assign pulse = pulse_int;
+    // assign pulse = pulse_int;
     
 endmodule

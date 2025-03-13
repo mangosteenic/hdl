@@ -20,55 +20,34 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module over_32(CLK, RESET, pulse, seconds_over32);
+module over_32(
+    input clk,
+    input rst,
+    input pulse,
+    output reg [15:0] seconds_w_steps_over_32
+);
 
-    input CLK, RESET, pulse;
-    output [15:0] seconds_over32;
-    
-    reg [8:0] steps;
-    reg [3:0] seconds;
-    reg [26:0] cycles;
-    reg [15:0] seconds_over32_int;
-    reg hold_value;
-    
-    always @(posedge CLK or posedge RESET)
-    begin
-        if (RESET)
-        begin
-            steps <= 0;
-            seconds <= 0;
+reg [31:0] cycles;
+reg [31:0] steps;
+reg [3:0] seconds;
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        cycles <= 0;
+        steps <= 0;
+        seconds <= 0;
+        seconds_w_steps_over_32 <= 0;
+    end else begin
+        if (pulse) steps <= steps + 1;
+        if (cycles == 100000000 - 1) begin
             cycles <= 0;
-            seconds_over32_int <= 0;
-            hold_value <= 0;
-        end
-        else
-        begin
-            if (seconds < 9)
-            begin
-                if (cycles < 100000000)
-                    cycles <= cycles + 1;
-                else
-                begin
-                    cycles <= 0;
-                    if (steps > 32)
-                        seconds_over32_int <= seconds_over32_int + 1;
-                    steps <= 0;
-                    seconds <= seconds + 1;
-                end
+            if (seconds < 9) begin
+                seconds <= seconds + 1;
+                if (steps > 31) seconds_w_steps_over_32 <= seconds_w_steps_over_32 + 1;
+                steps <= 0;
             end
-            else
-            begin
-                hold_value <= 1;
-            end
-        end
+        end else cycles <= cycles + 1;
     end
-    
-    always @(posedge CLK)
-    begin
-        if (pulse && seconds < 9)
-            steps <= steps + 1;
-    end
-    
-    assign seconds_over32 = hold_value ? seconds_over32_int : 0;
+end
     
 endmodule

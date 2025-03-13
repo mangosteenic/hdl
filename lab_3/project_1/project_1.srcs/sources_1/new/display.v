@@ -25,7 +25,7 @@ module display(
     input RESET,
     input [15:0] stepcount,
     input [15:0] distance,
-    input [15:0] steps_over_32,
+    input [15:0] seconds_w_steps_over_32,
     input [15:0] high_activity_time_secs,
     output [3:0] an,
     output [6:0] sseg
@@ -51,7 +51,7 @@ module display(
         case (state)    // multiplexer
             2'b00 : data = stepcount;
             2'b01 : data = distance;
-            2'b10 : data = steps_over_32;
+            2'b10 : data = seconds_w_steps_over_32;
             2'b11 : data = high_activity_time_secs;
 		endcase
 	end
@@ -64,7 +64,7 @@ module display(
         end
 		else
 		begin
-            if (counter == 32'd200000000)
+            if (counter == 200000000)
             begin
                 counter <= 0;
                 state <= next_state;
@@ -79,9 +79,12 @@ module display(
     bcd_seven c3 (.x(data[11:8]), .r(in2));
     bcd_seven c4 (.x(data[15:12]), .r(in3));
     
+    // module instantiation of the clock divider
+    clk_div_disp c5 (.clk(CLK), .reset(RESET), .clk_out(slow_clk));
+    
     // module instantiation of the multiplexer
     time_mux_state_machine c6 (
-        .clk (CLK),
+        .clk (slow_clk),
         .reset (RESET),
         .in0 (in0),
         .in1 (in1),

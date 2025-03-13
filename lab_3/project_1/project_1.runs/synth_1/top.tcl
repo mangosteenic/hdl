@@ -92,6 +92,7 @@ read_verilog -library xil_defaultlib {
   C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/HighActivityTime.v
   C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/StepCounter.v
   C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/bcd_seven.v
+  C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/clk_div_disp.v
   C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/display.v
   C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/fitbit_tracker.v
   C:/Users/hanna/460M/lab_3/project_1/project_1.srcs/sources_1/new/over_32.v

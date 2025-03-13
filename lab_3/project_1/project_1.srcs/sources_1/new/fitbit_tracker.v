@@ -20,18 +20,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module fitbit_tracker(CLK, RESET, pulse, stepcount, distance, steps_over_32, high_activity_time_secs);
+module fitbit_tracker(CLK, RESET, pulse, stepcount, distance, seconds_w_steps_over_32, high_activity_time_secs, SI);
     
     input CLK, RESET, pulse;
-    output [15:0] stepcount, distance, steps_over_32, high_activity_time_secs;
-    
-    wire [15:0] stepcount_raw;
-    
-    StepCounter sc1 (CLK, RESET, pulse, stepcount_raw, SI);
-    DistanceCovered dc1 (CLK, RESET, stepcount_raw, distance);
-    over_32 o1 (CLK, RESET, pulse, seconds_over32);
-    HighActivityTime hat1 (CLK, RESEt, pulse, high_activity_time_secs);
-    
-    assign stepcount = (stepcount_raw > 9999) ? 9999 : stepcount_raw;
-    
+    output [15:0] stepcount, distance, seconds_w_steps_over_32, high_activity_time_secs;
+    output SI;
+        
+    StepCounter sc1 (RESET, pulse, stepcount, SI);
+    DistanceCovered dc1 (RESET, pulse, distance);
+    over_32 o1 (CLK, RESET, pulse, seconds_w_steps_over_32);
+    HighActivityTime hat1 (CLK, RESET, pulse, high_activity_time_secs);
+        
 endmodule
