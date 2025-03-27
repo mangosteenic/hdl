@@ -25,8 +25,8 @@ module top(clk, btns, swtchs, leds, segs, an);
     input[3:0] btns;
     input[7:0] swtchs;
     output[7:0] leds;
-    output[6:0] segs;
-    output[3:0] an;
+    output reg [6:0] segs;
+    output reg [3:0] an;
     
     //might need to change some of these from wires to regs
     wire cs;
@@ -49,4 +49,26 @@ module top(clk, btns, swtchs, leds, segs, an);
     
     //add any other functions you need
     //(e.g. debouncing, multiplexing, clock-division, etc)
+
+    wire [6:0] in0, in1;
+
+    hexto7segment c1 (.x(data_out_ctrl[3:0]), .r(in0));
+    hexto7segment c2 (.x(data_out_ctrl[7:4]), .r(in1));
+
+    // multiplexing
+    reg s;
+    always @(posedge clk) begin
+        case(s)
+            0: begin
+                s <= 1;
+                an <= 4'b1110;
+                segs <= in0;
+            end
+            1: begin
+                s <= 0;
+                an <= 4'b1101;
+                segs <= in1;
+            end
+        endcase
+    end
 endmodule

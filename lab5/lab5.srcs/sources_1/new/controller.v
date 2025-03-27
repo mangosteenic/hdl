@@ -37,16 +37,35 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
     reg [6:0] spr;  // next free address past the top of the stack
     reg [6:0] dar;  // address of data that should be displayed on the output
     reg [7:0] dvr;  // value that should be displayed on the output
-    reg EMPTY; // empty flag
+    reg EMPTY;      // empty flag
 
     always @(posedge clk) begin
-        // Clear/RST
-        if (btns[3] && !btns[2] && btns[1]) begin
-            spr <= 2'h7F;
-            dar <= 2'h00;
-            dvr <= 2'h00;
-            EMPTY <= 1'b1;
-        end
+        case(btns[3:2])
+            2'b00 : begin                   // PUSH/POP MODE
+                if (btns[1]) begin          // delete/pop
+                end else if (btns[0]) begin // enter/push
+                end
+            end
+            2'b01 : begin                   // ADD/SUBTRACT MODE
+                if (btns[1]) begin          // subtract
+                end else if (btns[0]) begin // add
+                end
+            end
+            2'b10 : begin                   // CLEAR/TOP MODE
+                if (btns[1]) begin          // clear/RST
+                    spr <= 2'h7F;
+                    dar <= 2'h00;
+                    dvr <= 2'h00;
+                    EMPTY <= 1'b1;
+                end else if (btns[0]) begin // top
+                end
+            end
+            2'b11 : begin                   // DEC/INC MODE
+                if (btns[1]) begin          // dec addr
+                end else if (btns[0]) begin // inc addr
+                end
+            end
+        endcase
     end
 
     assign leds[7] = EMPTY;
