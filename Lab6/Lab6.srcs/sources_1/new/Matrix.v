@@ -59,24 +59,24 @@ module Matrix(
     input clk,
     input reset,
     input start,
-    input a00, 
-    input a01, 
-    input a02, 
-    input a10, 
-    input a11, 
-    input a12, 
-    input a20, 
-    input a21, 
-    input a22, 
-    input b00, 
-    input b01, 
-    input b02, 
-    input b10, 
-    input b11, 
-    input b12, 
-    input b20, 
-    input b21, 
-    input b22,
+    input [7:0] a00, 
+    input [7:0] a01, 
+    input [7:0] a02, 
+    input [7:0] a10, 
+    input [7:0] a11, 
+    input [7:0] a12, 
+    input [7:0] a20, 
+    input [7:0] a21, 
+    input [7:0] a22, 
+    input [7:0] b00, 
+    input [7:0] b01, 
+    input [7:0] b02, 
+    input [7:0] b10, 
+    input [7:0] b11, 
+    input [7:0] b12, 
+    input [7:0] b20, 
+    input [7:0] b21, 
+    input [7:0] b22,
 
     output M1_out,
     output M2_out,
@@ -87,7 +87,7 @@ module Matrix(
     output M7_out,
     output M8_out,
     output M9_out,
-    output done
+    output reg done = 0
     );
 
     reg M1_start = 0;
@@ -101,13 +101,13 @@ module Matrix(
     reg M9_start = 0;
 
     // Porpagate inputs to top-level MACs
-    reg [7:0] in_M1a;
-    reg [7:0] in_M1b;
-    reg [7:0] in_M2b;
-    reg [7:0] in_M3b;
-    reg [7:0] in_M4a;
-    reg [7:0] in_M7a;
-    reg [2:0] count;
+    reg [7:0] in_M1a = 0;
+    reg [7:0] in_M1b = 0;
+    reg [7:0] in_M2b = 0;
+    reg [7:0] in_M3b = 0;
+    reg [7:0] in_M4a = 0;
+    reg [7:0] in_M7a = 0;
+    reg [2:0] count = 0;
     always @(posedge clk) begin
         if(start) begin
             case(count)
