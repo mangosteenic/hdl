@@ -39,6 +39,8 @@ module top
     wire[7:0] data_out_ctrl;
     wire[7:0] data_bus;
     
+    reg btnU_synch, btnL_synch, btnR_synch, btnD_synch;
+    
     wire btnU_singlepress;
     wire btnL_singlepress;
     //wire btnR_singlepress;
@@ -78,7 +80,6 @@ module top
     // Synchronizers
     // BtnU
     reg btnU_synch_temp = 0;
-    reg btnU_synch = 0;
     always @(posedge debounce_clk) begin
         btnU_synch_temp <= btnU;
         btnU_synch <= btnU_synch_temp;
@@ -86,7 +87,6 @@ module top
     
     // BtnL
     reg btnL_synch_temp = 0;
-    reg btnL_synch = 0;
     always @(posedge debounce_clk) begin
         btnL_synch_temp <= btnL;
         btnL_synch <= btnL_synch_temp;
@@ -94,7 +94,6 @@ module top
     
     // BtnR
     reg btnR_synch_temp = 0;
-    reg btnR_synch = 0;
     always @(posedge debounce_clk) begin
         btnR_synch_temp <= btnR;
         btnR_synch <= btnR_synch_temp;
@@ -102,7 +101,6 @@ module top
     
     // BtnD
     reg btnD_synch_temp = 0;
-    reg btnD_synch = 0;
     always @(posedge debounce_clk) begin
         btnD_synch_temp <= btnD;
         btnD_synch <= btnD_synch_temp;
