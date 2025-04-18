@@ -1,0 +1,142 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Fri Apr 18 08:52:44 2025
+[*]
+[dumpfile] "/home/p7810456/Class/HDL_Partner_Labs_ECE460M/Lab6/Lab6.srcs/lab6.fst"
+[dumpfile_mtime] "Fri Apr 18 08:49:07 2025"
+[dumpfile_size] 5757
+[savefile] "/home/p7810456/Class/HDL_Partner_Labs_ECE460M/Lab6/Lab6.srcs/gtkwave_config.gtkw"
+[timestart] 190200
+[size] 1442 1015
+[pos] -1 -1
+*-16.400000 426700 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[markername] AA
+[markername] BB
+[markername] CC
+[markername] DD
+[markername] EE
+[markername] FF
+[markername] GG
+[markername] HH
+[markername] II
+[markername] JJ
+[markername] KK
+[markername] LL
+[markername] MM
+[markername] NN
+[markername] OO
+[markername] PP
+[markername] QQ
+[markername] RR
+[markername] SS
+[markername] TT
+[markername] UU
+[markername] VV
+[markername] WW
+[markername] XX
+[markername] YY
+[markername] ZZ
+[treeopen] Systolic_Matrix_tb.
+[treeopen] Systolic_Matrix_tb.DUT.
+[sst_width] 273
+[signals_width] 271
+[sst_expanded] 1
+[sst_vpaned_height] 293
+@22
+Systolic_Matrix_tb.DUT.M1_out[7:0]
+Systolic_Matrix_tb.DUT.M2_out[7:0]
+Systolic_Matrix_tb.DUT.M3_out[7:0]
+Systolic_Matrix_tb.DUT.M4_out[7:0]
+Systolic_Matrix_tb.DUT.in_M4a[7:0]
+Systolic_Matrix_tb.DUT.M5_out[7:0]
+Systolic_Matrix_tb.DUT.M6_out[7:0]
+Systolic_Matrix_tb.DUT.M7_out[7:0]
+Systolic_Matrix_tb.DUT.M8_out[7:0]
+Systolic_Matrix_tb.DUT.M9_out[7:0]
+Systolic_Matrix_tb.DUT.M2.a[7:0]
+Systolic_Matrix_tb.DUT.M2.b[7:0]
+@28
+Systolic_Matrix_tb.DUT.M2.clk
+@22
+Systolic_Matrix_tb.DUT.in_M3b[7:0]
+Systolic_Matrix_tb.DUT.in_M7a[7:0]
+Systolic_Matrix_tb.DUT.M2.curr_mult_out[7:0]
+@28
+Systolic_Matrix_tb.DUT.M2.exp_a[2:0]
+Systolic_Matrix_tb.DUT.M2.exp_accum[2:0]
+Systolic_Matrix_tb.DUT.M2.exp_b[2:0]
+Systolic_Matrix_tb.DUT.M2.exp_mult[2:0]
+@22
+Systolic_Matrix_tb.DUT.M2.frac_a[3:0]
+Systolic_Matrix_tb.DUT.M2.frac_b[3:0]
+Systolic_Matrix_tb.DUT.M2.frac_mult_sextendable[7:0]
+Systolic_Matrix_tb.DUT.M2.out[7:0]
+@28
+Systolic_Matrix_tb.DUT.M2.reset
+Systolic_Matrix_tb.DUT.M2.sign_a
+Systolic_Matrix_tb.DUT.M2.sign_accum
+Systolic_Matrix_tb.DUT.M2.sign_b
+Systolic_Matrix_tb.DUT.M2.sign_mult
+@22
+Systolic_Matrix_tb.DUT.M2.temp[7:0]
+Systolic_Matrix_tb.DUT.M2.temp_mult[15:0]
+@28
+Systolic_Matrix_tb.DUT.t2
+Systolic_Matrix_tb.DUT.t3
+Systolic_Matrix_tb.DUT.t4
+Systolic_Matrix_tb.DUT.t5
+@200
+-MAC below this
+@22
+Systolic_Matrix_tb.DUT.M8.a[7:0]
+Systolic_Matrix_tb.DUT.M8.b[7:0]
+Systolic_Matrix_tb.DUT.M2.prop_b[7:0]
+Systolic_Matrix_tb.DUT.M5.prop_b[7:0]
+@28
+Systolic_Matrix_tb.DUT.M8.clk
+@22
+Systolic_Matrix_tb.DUT.M8.curr_mult_out[7:0]
+@28
+Systolic_Matrix_tb.DUT.M8.done
+@22
+Systolic_Matrix_tb.DUT.M8.out[7:0]
+@28
+Systolic_Matrix_tb.DUT.M8.exp_a[2:0]
+Systolic_Matrix_tb.DUT.M8.exp_accum[2:0]
+Systolic_Matrix_tb.DUT.M8.exp_b[2:0]
+Systolic_Matrix_tb.DUT.M8.exp_mult[2:0]
+@22
+Systolic_Matrix_tb.DUT.M8.frac_a[3:0]
+Systolic_Matrix_tb.DUT.M8.frac_accum[4:0]
+Systolic_Matrix_tb.DUT.M8.frac_b[3:0]
+Systolic_Matrix_tb.DUT.M8.frac_mult[4:0]
+Systolic_Matrix_tb.DUT.M8.frac_mult_sextendable[7:0]
+Systolic_Matrix_tb.DUT.M8.in_a[7:0]
+Systolic_Matrix_tb.DUT.M8.in_b[7:0]
+Systolic_Matrix_tb.DUT.M8.out_sextendable[7:0]
+Systolic_Matrix_tb.DUT.M8.prop_a[7:0]
+Systolic_Matrix_tb.DUT.M8.prop_a_buf[7:0]
+Systolic_Matrix_tb.DUT.M8.prop_b[7:0]
+Systolic_Matrix_tb.DUT.M8.prop_b_buf[7:0]
+@28
+Systolic_Matrix_tb.DUT.M8.reset
+Systolic_Matrix_tb.DUT.M8.run_state
+Systolic_Matrix_tb.DUT.M8.sign_a
+Systolic_Matrix_tb.DUT.M8.sign_accum
+Systolic_Matrix_tb.DUT.M8.sign_b
+Systolic_Matrix_tb.DUT.M8.sign_mult
+Systolic_Matrix_tb.DUT.M8.start
+@22
+Systolic_Matrix_tb.DUT.M8.temp[7:0]
+Systolic_Matrix_tb.DUT.M8.temp_add[5:0]
+Systolic_Matrix_tb.DUT.M8.temp_mult[15:0]
+@28
+Systolic_Matrix_tb.DUT.M8.valid_0
+Systolic_Matrix_tb.DUT.M8.valid_1
+Systolic_Matrix_tb.DUT.M8.valid_2
+Systolic_Matrix_tb.DUT.M8.valid_3
+Systolic_Matrix_tb.DUT.M8.valid_4
+@22
+Systolic_Matrix_tb.DUT.M2.prop_b[7:0]
+[pattern_trace] 1
+[pattern_trace] 0
