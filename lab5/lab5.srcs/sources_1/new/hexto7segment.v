@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 11/30/2023 06:21:30 PM
+// Create Date: 04/04/2025 06:33:42 PM
 // Design Name: 
 // Module Name: hexto7segment
 // Project Name: 
@@ -40,7 +40,7 @@ module hexto7segment(
             4'b1011 : r = 7'b1100000;   // b
             4'b1100 : r = 7'b0110001;   // C
             4'b1101 : r = 7'b1000010;   // d
-            4'b1110 : r = 7'b0110000;   // E
+            4'b1110 : r = 7'b0110000;   // E    
             4'b1111 : r = 7'b0111000;   // F
         endcase
 endmodule

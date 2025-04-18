@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 03/26/2025 03:06:48 PM
+// Create Date: 04/04/2025 06:29:53 PM
 // Design Name: 
 // Module Name: memory
 // Project Name: 
@@ -34,9 +34,9 @@ module memory(clock, cs, we, address, data_in, data_out);
     
     always @ (negedge clock)
     begin
-        if((we == 1) && (cs == 1))
+        if ((we == 1) && (cs == 1))
             RAM[address] <= data_in[7:0];
             
         data_out <= RAM[address];
-    end
+    end   
 endmodule
