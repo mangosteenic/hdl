@@ -78,15 +78,15 @@ module Matrix(
     input [7:0] b21, 
     input [7:0] b22,
 
-    output M1_out,
-    output M2_out,
-    output M3_out,
-    output M4_out,
-    output M5_out,
-    output M6_out,
-    output M7_out,
-    output M8_out,
-    output M9_out,
+    output [7:0] M1_out,
+    output [7:0] M2_out,
+    output [7:0] M3_out,
+    output [7:0] M4_out,
+    output [7:0] M5_out,
+    output [7:0] M6_out,
+    output [7:0] M7_out,
+    output [7:0] M8_out,
+    output [7:0] M9_out,
     output reg done = 0
     );
 
@@ -107,90 +107,98 @@ module Matrix(
     reg [7:0] in_M3b = 0;
     reg [7:0] in_M4a = 0;
     reg [7:0] in_M7a = 0;
-    reg [2:0] count = 0;
+    reg [5:0] count = 0;
+    wire [3:0] state = count[5:2];
+
+    always @(*) begin
+        case(state)
+            1: begin
+                M1_start <= 1;
+
+                in_M1a <= a00;
+                in_M1b <= b00;
+            end
+            2: begin
+                M2_start <= 1;
+                M4_start <= 1;
+
+                in_M1a <= a01;
+                in_M1b <= b10;
+
+                in_M2b <= b01;
+
+                in_M4a <= a10;
+            end
+            3: begin
+                M3_start <= 1;
+                M5_start <= 1;
+                M7_start <= 1;
+
+                in_M1a <= a02;
+                in_M1b <= b20;
+
+                in_M2b <= b11;
+
+                in_M3b <= b02;
+
+                in_M4a <= a11;
+
+                in_M7a <= a20;
+            end
+            4: begin
+                M1_start <= 0;
+                M6_start <= 1;
+                M8_start <= 1;
+
+                in_M2b <= b21;
+
+                in_M3b <= b12;
+
+                in_M4a <= a12;
+
+                in_M7a <= a21;
+            end
+            5: begin
+                M9_start <= 1;
+                M2_start <= 0;
+                M4_start <= 0;
+
+                in_M3b <= b22;
+                in_M7a <= a22;
+            end
+            6: begin
+                M3_start <= 0;
+                M5_start <= 0;
+                M7_start <= 0;
+            end
+            7: begin
+                M6_start <= 0;
+                M8_start <= 0;
+            end
+            8: begin
+                M9_start <= 0;
+
+                done <= 1;
+            end
+            default: begin
+                M1_start <= 0;
+                M2_start <= 0;
+                M3_start <= 0;
+                M4_start <= 0;
+                M5_start <= 0;
+                M6_start <= 0;
+                M7_start <= 0;
+                M8_start <= 0;
+                M9_start <= 0;
+            end
+        endcase
+    end
+
     always @(posedge clk) begin
         if(start) begin
-            case(count)
-                0: begin
-                    M1_start <= 1;
-
-                    in_M1a <= a00;
-                    in_M1b <= b00;
-                end
-                1: begin
-                    M2_start <= 1;
-                    M4_start <= 1;
-
-                    in_M1a <= a01;
-                    in_M1b <= b10;
-
-                    in_M2b <= b01;
-
-                    in_M4a <= a10;
-                end
-                2: begin
-                    M3_start <= 1;
-                    M5_start <= 1;
-                    M7_start <= 1;
-
-                    in_M1a <= a02;
-                    in_M1b <= b20;
-
-                    in_M2b <= b11;
-
-                    in_M3b <= b02;
-
-                    in_M4a <= a11;
-
-                    in_M7a <= a20;
-                end
-                3: begin
-                    M1_start <= 0;
-                    M6_start <= 1;
-                    M8_start <= 1;
-
-                    in_M2b <= b21;
-
-                    in_M3b <= b12;
-
-                    in_M4a <= a12;
-
-                    in_M7a <= a21;
-                end
-                4: begin
-                    M9_start <= 1;
-                    M2_start <= 0;
-                    M4_start <= 0;
-
-                    in_M3b <= b22;
-                    in_M7a <= a22;
-                end
-                5: begin
-                    M3_start <= 0;
-                    M5_start <= 0;
-                    M7_start <= 0;
-                end
-                6: begin
-                    M6_start <= 0;
-                    M8_start <= 0;
-                end
-                7: begin
-                    M9_start <= 0;
-                end
-                default: begin
-                    M1_start <= 0;
-                    M2_start <= 0;
-                    M3_start <= 0;
-                    M4_start <= 0;
-                    M5_start <= 0;
-                    M6_start <= 0;
-                    M7_start <= 0;
-                    M8_start <= 0;
-                    M9_start <= 0;
-                end
-            endcase
-
-            count <= count + 1;
+            if(!done) begin
+                count <= count + 1;
+            end
         end
     end
 
