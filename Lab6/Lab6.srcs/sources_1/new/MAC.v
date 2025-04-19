@@ -68,7 +68,32 @@ module MAC(
     wire [7:0] frac_mult_sextendable = {4'b0001, temp_mult[7:4]};
     wire [7:0] out_sextendable = {4'b0001, out[3:0]};
 
-    wire [5:0] temp_add = ({1'b0, frac_mult} + {1'b0, frac_accum});
+    reg [5:0] temp_add = 0; // ({1'b0, frac_mult} + {1'b0, frac_accum});
+    reg temp_sign = 0;
+
+    // If we are adding/subtracting from zero
+    wire zero_case = (out == 0) || (curr_mult_out == 0);
+
+    always @(*) begin
+        // Find sign of result
+        if(curr_mult_out[7] == sign_accum) begin
+            temp_sign = sign_accum; // If they are the same, the output sign is the same
+        end
+        else begin
+            // See which one is larger - exps should be the same
+            // Take the sign of the larger one
+            
+            if(frac_mult == frac_accum) begin
+                temp_sign = 0; // Results in a zero
+            end
+            else if(frac_mult > frac_accum) begin
+                temp_sign = curr_mult_out[7]; // Take sign of mult
+            end
+            else begin //frac_mult < frac_accum
+                temp_sign = sign_accum; // Take sign of accumulator
+            end
+        end
+    end
 
     // Multiply FP numbers by multiplying the fraction and adding the exponent
     // Then sign the output accordingly
@@ -106,7 +131,6 @@ module MAC(
     // Add to accumulator
     always @(posedge clk) begin
         if(run_state) begin
-
             // Stage 0: Sample
             if(valid_0) begin
                 in_a <= a;
@@ -135,7 +159,7 @@ module MAC(
                 valid_2 <= 1;
             end
 
-            // Stage 2: Add
+            // Stage 2: Shift exponents
             if(valid_2) begin
                 // Handle zero case
                 if(curr_mult_out == 0) begin
@@ -180,16 +204,67 @@ module MAC(
                 valid_3 <= 1;
                 valid_2 <= 0;
             end
+
+            // Stage 3: Add/Subtract
+            if(valid_3) begin
+                // Handle zero case
+                if(frac_mult == 0) begin
+                    temp_add <= out;
+                    valid_3 <= 0;
+                    valid_4 <= 1;
+                end
+                else if(frac_accum == 0) begin
+                    temp_add <= curr_mult_out;
+                    valid_3 <= 0;
+                    valid_4 <= 1;
+                end
+                else begin
+                    // Add
+                    temp[6:4] <= exp_mult; // Exponent
+
+                    // If subtracting different signs, always subtract the smaller one
+                    // If the signs are the same, add
+                    if(sign_mult == sign_accum) begin
+                        temp_add <= frac_mult + frac_accum; // Fraction
+                    end
+                    else begin
+                        // Subtract the smaller one
+                        if(frac_mult > frac_accum) begin
+                            temp_add <= frac_mult - frac_accum; // Fraction
+                        end
+                        else begin
+                           temp_add <= frac_accum - frac_mult; // Fraction 
+                        end
+                    end
+
+                    // Sign
+                    temp[7] <= temp_sign; // Subtract
+                end
+
+                valid_3 <= 0;
+                valid_4 <= 1;
+            end
             
 
-            // Stage 3: Put into accumulator buffer
-            if(valid_3) begin
-                out[7] <= out[7] ^ sign_mult;
+            // Stage 4: Put into accumulator buffer
+            if(valid_4) begin
+                out[7] <= temp_sign;
 
                 // Overflow
-                if((temp_add[5])) begin
+                if((temp_add[5]) && !zero_case) begin
                     out[3:0] <= temp_add[4:1];
                     exp_mult = exp_mult + 1;
+                end
+                // Underflow
+                else if((temp_add[4] == 0) && !zero_case) begin
+                    out[3:0] <= {temp_add[2:0], 1'b0}; // Shift with zero
+                    if(exp_mult > 0) begin
+                        exp_mult = exp_mult - 1;
+                    end
+                    else begin
+                        // Fault?
+                        exp_mult = 0;
+                    end
                 end
                 else begin
                     out[3:0] <= temp_add[3:0];
@@ -201,8 +276,8 @@ module MAC(
                 // // Put into accumulator
                 // out <= temp;
 
-                valid_3 <= 0;
-                // valid_4 <= 1;
+                // valid_3 <= 0;
+                valid_4 <= 0;
                 done <= 1;
 
                 prop_a <= in_a;

@@ -100,39 +100,46 @@ module Matrix(
     // reg M8_start = 0;
     // reg M9_start = 0;
 
-    reg M1_start = 0;
-    wire M2_start;
-    wire M3_start;
-    wire M4_start;
-    wire M5_start;
-    wire M6_start;
-    wire M7_start;
-    wire M8_start;
-    wire M9_start;
+    // wire M1_start;
+    // wire M2_start;
+    // wire M3_start;
+    // wire M4_start;
+    // wire M5_start;
+    // wire M6_start;
+    // wire M7_start;
+    // wire M8_start;
+    // wire M9_start;
 
-    // Porpagate inputs to top-level MACs
+    wire t1 = (state == 1) || (state == 5) || (state == 9);
+    wire t2 = (state == 5) || (state == 9) || (state == 13);
+    wire t3 = (state == 9) || (state == 13) || (state == 17);
+    wire t4 = (state == 13) || (state == 17) || (state == 21);
+    wire t5 = (state == 17) || (state == 21) || (state == 25);
+
+    // Propagate inputs to top-level MACs
     reg [7:0] in_M1a = 0;
     reg [7:0] in_M1b = 0;
     reg [7:0] in_M2b = 0;
     reg [7:0] in_M3b = 0;
     reg [7:0] in_M4a = 0;
     reg [7:0] in_M7a = 0;
-    reg [5:0] count = 0;
-    wire [4:0] state = count[4:0];
+    reg [6:0] count = 0;
+    wire [5:0] state = count[6:1];
 
     always @(*) begin
         case(state)
             1: begin
-                M1_start <= 1;
+                // t1 <= 1;
 
                 in_M1a <= a00;
                 in_M1b <= b00;
             end
             2: begin
-                M1_start <= 0;
+                // t1 <= 0;
             end
             5: begin
-                M1_start <= 1;
+                // t1 <= 1;
+                // t2 <= 1;
                 // M2_start <= 1;
                 // M4_start <= 1;
 
@@ -144,10 +151,13 @@ module Matrix(
                 in_M4a <= a10;
             end
             6: begin
-                M1_start <= 0;
+                // t1 <= 0;
+                // t2 <= 0;
             end
             9: begin
-                M1_start <= 1;
+                // t1 <= 1;
+                // t2 <= 1;
+                // t3 <= 1;
                 // M3_start <= 1;
                 // M5_start <= 1;
                 // M7_start <= 1;
@@ -167,9 +177,14 @@ module Matrix(
                 in_M7a <= a20;
             end
             10: begin
-                M1_start <= 0;
+                // t1 <= 0;
+                // t2 <= 0;
+                // t3 <= 0;
             end
             13: begin
+                // t2 <= 1;
+                // t3 <= 1;
+                // t4 <= 1;
                 // M3_start <= 0;
                 // M5_start <= 0;
                 // M7_start <= 0;
@@ -183,10 +198,16 @@ module Matrix(
                 in_M7a <= a21;
             end
             14: begin
+                // t2 <= 0;
+                // t3 <= 0;
+                // t4 <= 0;
                 // M6_start <= 0;
                 // M8_start <= 0;
             end
             17: begin
+                // t3 <= 1;
+                // t4 <= 1;
+                // t5 <= 1;
                 // M9_start <= 0;
 
                 in_M3b <= b22;
@@ -194,7 +215,7 @@ module Matrix(
                 in_M7a <= a22;
             end
             21: begin
-                done <= 1;
+                // done <= 1;
             end
             default: begin
                 // M1_start <= 0;
@@ -218,15 +239,15 @@ module Matrix(
         end
     end
 
-    wire t2;
-    wire t3;
-    wire t4;
-    wire t5;
-
     wire dummy1;
     wire dummy2;
     wire dummy3;
     wire dummy4;
+    wire dummy5;
+    wire dummy6;
+    wire dummy7;
+    wire dummy8;
+    wire dummy9;
 
     wire [7:0] M1_a_prop;
     wire [7:0] M2_a_prop;
@@ -247,14 +268,14 @@ module Matrix(
     wire [7:0] M8_b_prop;
     wire [7:0] M9_b_prop;
 
-    MAC M1(clk, reset, M1_start, in_M1a, in_M1b, t2, M1_out, M1_a_prop, M1_b_prop);
-    MAC M2(clk, reset, t2, M1_a_prop, in_M2b, t3, M2_out, M2_a_prop, M2_b_prop);
-    MAC M3(clk, reset, t3, M2_a_prop, in_M3b, t4, M3_out, M3_a_prop, M3_b_prop);
+    MAC M1(clk, reset, t1, in_M1a, in_M1b, dummy5, M1_out, M1_a_prop, M1_b_prop);
+    MAC M2(clk, reset, t2, M1_a_prop, in_M2b, dummy6, M2_out, M2_a_prop, M2_b_prop);
+    MAC M3(clk, reset, t3, M2_a_prop, in_M3b, dummy7, M3_out, M3_a_prop, M3_b_prop);
     MAC M4(clk, reset, t2, in_M4a, M1_b_prop, dummy1, M4_out, M4_a_prop, M4_b_prop);
     MAC M5(clk, reset, t3, M4_a_prop, M2_b_prop, dummy2, M5_out, M5_a_prop, M5_b_prop);
-    MAC M6(clk, reset, t4, M5_a_prop, M3_b_prop, M9_start, M6_out, M6_a_prop, M6_b_prop);
+    MAC M6(clk, reset, t4, M5_a_prop, M3_b_prop, dummy8, M6_out, M6_a_prop, M6_b_prop);
     MAC M7(clk, reset, t3, in_M7a, M4_b_prop, dummy3, M7_out, M7_a_prop, M7_b_prop);
-    MAC M8(clk, reset, t4, M7_a_prop, M5_b_prop, t5, M8_out, M8_a_prop, M8_b_prop);
+    MAC M8(clk, reset, t4, M7_a_prop, M5_b_prop, dummy9, M8_out, M8_a_prop, M8_b_prop);
     MAC M9(clk, reset, t5, M8_a_prop, M6_b_prop, dummy4, M9_out, M9_a_prop, M9_b_prop);
 
 endmodule
