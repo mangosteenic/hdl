@@ -30,7 +30,7 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
     input[3:0] btns;
     input[7:0] swtchs;
     output reg [7:0] leds;
-    output[6:0] segs;
+    input[6:0] segs;
     output[3:0] an;
     
     //WRITE THE FUNCTION OF THE CONTROLLER
@@ -39,21 +39,22 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
     reg [7:0] dvr = 8'b00000000;  // value that should be displayed on the output
     
     // State machine for functionality
-    localparam S_IDLE = 0;
-    localparam S_PUSH_START = 1;
-    localparam S_ADD_START = 2;
-    localparam S_ADD_1 = 3;
-    localparam S_ADD_2 = 4;
-    localparam S_ADD_3 = 5;
-    localparam S_SUB_START = 6;
-    localparam S_SUB_1 = 7;
-    localparam S_SUB_2 = 8;
-    localparam S_SUB_3 = 9;
-    localparam S_MEM_WAIT = 10;
+    localparam S_RST_START = 0;
+    localparam S_IDLE = 1;
+    localparam S_PUSH_START = 2;
+    localparam S_ADD_START = 3;
+    localparam S_ADD_1 = 4;
+    localparam S_ADD_2 = 5;
+    localparam S_ADD_3 = 6;
+    localparam S_SUB_START = 7;
+    localparam S_SUB_1 = 8;
+    localparam S_SUB_2 = 9;
+    localparam S_SUB_3 = 10;
+    localparam S_MEM_WAIT = 11;
     
     // For operation state machine
-    reg [2:0] current_state = S_IDLE;
-    reg [2:0] next_state = S_IDLE;
+    reg [2:0] current_state = S_RST_START;
+    reg [2:0] next_state = 0;
     
     // Operands for math
     reg [7:0] op_1 = 8'b00000000;
@@ -66,167 +67,186 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
         data_out = 8'b00000000;
     end
     
-    always @(*) begin
+    always @(posedge clk) begin
         case(current_state)
-            /*S_RST_START: begin
-                address = 7'b1111111;
-                data_out = 8'b00000000;
-                leds[7] = 1'b1;
-                leds[6:0] = 7'b0000000;
-                next_state = S_IDLE;
-            end*/
+            S_RST_START: begin
+                address <= 7'b1111111;
+                data_out <= 8'b00000000;
+                spr <= 7'b1111111;
+                dar <= 7'b0000000;
+                current_state <= S_IDLE;
+            end
             S_IDLE: begin
-                case(btns[3:2])
-                    2'b00: begin                    // PUSH/POP MODE
-                        if (btns[1]) begin          // delete/pop
-                            spr = spr + 1;
-                            dar = spr;
-                            cs = 1'b1;
-                            we = 1'b0;
-                            address = dar;
-                            next_state = S_MEM_WAIT;
-                        end else if (btns[0]) begin // enter/push
-                            we = 1'b1;
-                            cs = 1'b1;
-                            address = spr;
-                            dar = spr;
-                            data_out = swtchs;
-                            spr = spr - 1;
-                            next_state = S_PUSH_START;
+                if(!btns[1] && !btns[0]) begin
+                    cs <= 1'b0;
+                    we <= 1'b0;
+                    address <= address;
+                    data_out <= data_out;
+                    spr <= spr;
+                    dar <= dar;
+                    current_state <= S_IDLE;
+                end
+                else begin
+                    case(btns[3:2])
+                        2'b00: begin                    // PUSH/POP MODE
+                            if (btns[1]) begin          // delete/pop
+                                spr <= spr + 1;
+                                dar <= spr;
+                                cs <= 1'b1;
+                                we <= 1'b0;
+                                address <= dar;
+                                current_state <= S_MEM_WAIT;
+                            end else if (btns[0]) begin // enter/push
+                                we <= 1'b1;
+                                cs <= 1'b1;
+                                address <= spr;
+                                dar <= spr;
+                                data_out <= swtchs;
+                                spr <= spr - 1;
+                                current_state <= S_PUSH_START;
+                            end
                         end
-                    end
-                    2'b01: begin                    // ADD/SUBTRACT MODE
-                        if (btns[1]) begin          // subtract
-                            next_state = S_SUB_START;
-                        end else if (btns[0]) begin // add
-                            next_state = S_ADD_START;
+                        2'b01: begin                    // ADD/SUBTRACT MODE
+                            if (btns[1]) begin          // subtract
+                                current_state <= S_SUB_START;
+                            end else if (btns[0]) begin // add
+                                current_state <= S_ADD_START;
+                            end
+                            else current_state <= S_IDLE;
                         end
-                    end
-                    2'b10: begin                    // CLEAR/TOP MODE
-                        if (btns[1]) begin          // clear/rst
-                            we = 1'b1;
-                            address = 7'b1111111;
-                            data_out = 8'b00000000;
-                            dar = 7'b0000000;
-                            dvr = 8'b00000000;
-                            next_state = S_IDLE;
-                        end else if (btns[0]) begin // top
-                            dar = spr + 1;
-                            address = dar;
-                            cs = 1'b1;
-                            we = 1'b0;
-                            next_state = S_MEM_WAIT;
+                        2'b10: begin                    // CLEAR/TOP MODE
+                            if (btns[1]) begin          // clear/rst
+                                we <= 1'b1;
+                                address <= 7'b1111111;
+                                data_out <= 8'b00000000;
+                                dar <= 7'b0000000;
+                                dvr <= 8'b00000000;
+                                current_state <= S_RST_START;
+                            end else if (btns[0]) begin // top
+                                dar <= spr + 1;
+                                address <= dar;
+                                cs <= 1'b1;
+                                we <= 1'b0;
+                                current_state <= S_MEM_WAIT;
+                            end
+                            else current_state <= S_IDLE;
                         end
-                    end
-                    2'b11: begin                    // DEC/INC MODE
-                        if (btns[1]) begin          // dec addr
-                            dar = dar - 1;
-                            address = dar;
-                            cs = 1'b1;
-                            we = 1'b0;
-                            next_state = S_MEM_WAIT;
-                        end else if (btns[0]) begin // inc addr
-                            dar = dar + 1;
-                            address = dar;
-                            cs = 1'b1;
-                            we = 1'b0;
-                            next_state = S_MEM_WAIT;
+                        2'b11: begin                    // DEC/INC MODE
+                            if (btns[1]) begin          // dec addr
+                                dar <= dar - 1;
+                                address <= dar;
+                                cs <= 1'b1;
+                                we <= 1'b0;
+                                current_state <= S_MEM_WAIT;
+                            end else if (btns[0]) begin // inc addr
+                                dar <= dar + 1;
+                                address <= dar;
+                                cs <= 1'b1;
+                                we <= 1'b0;
+                                current_state <= S_MEM_WAIT;
+                            end
+                            else current_state <= S_IDLE;
                         end
-                    end
-                endcase
+                        default: begin
+                            current_state <= S_IDLE;
+                        end
+                    endcase
+                end
             end
             
             S_PUSH_START: begin
-                we = 1'b0;
-                cs = 1'b1;
-                address = dar;
-                next_state = S_MEM_WAIT;
+                we <= 1'b0;
+                cs <= 1'b1;
+                address <= dar;
+                current_state <= S_MEM_WAIT;
             end
             
             S_ADD_START: begin
-                cs = 1'b1;
-                we = 1'b0;
-                spr = spr + 1;
-                address = spr + 1;
-                next_state = S_ADD_1;
+                cs <= 1'b1;
+                we <= 1'b0;
+                spr <= spr + 1;
+                address <= spr + 1;
+                current_state <= S_ADD_1;
             end
             
             S_ADD_1: begin
-                op_1 = data_in;
+                op_1 <= data_in;
                 
-                cs = 1'b1;
-                we = 1'b0;
-                spr = spr + 1;
-                address = spr + 1;
-                next_state = S_ADD_2;
+                cs <= 1'b1;
+                we <= 1'b0;
+                spr <= spr + 1;
+                address <= spr + 1;
+                current_state <= S_ADD_2;
             end
             
             S_ADD_2: begin
-                op_2 = data_in;
-                data_out = op_1 + op_2;
+                op_2 <= data_in;
+                data_out <= op_1 + op_2;
                                 
-                we = 1'b1;
-                cs = 1'b1;
-                address = spr;
-                next_state = S_ADD_3;
+                we <= 1'b1;
+                cs <= 1'b1;
+                address <= spr;
+                current_state <= S_ADD_3;
             end
             
             S_ADD_3: begin
-                we = 1'b0;
-                cs = 1'b1;
-                spr = spr + 1;
-                dar = spr + 1;
-                address = dar;
-                next_state = S_MEM_WAIT;
+                we <= 1'b0;
+                cs <= 1'b1;
+                spr <= spr + 1;
+                dar <= spr + 1;
+                address <= dar;
+                current_state <= S_MEM_WAIT;
             end
             
             S_SUB_START: begin
-                spr = spr + 1;
-                dar = spr + 1;
-                cs = 1'b1;
-                we = 1'b0;
-                address = dar;
-                next_state = S_SUB_1;
+                spr <= spr + 1;
+                dar <= spr + 1;
+                cs <= 1'b1;
+                we <= 1'b0;
+                address <= dar;
+                current_state <= S_SUB_1;
             end
             
             S_SUB_1: begin
-                op_2 = data_in;
-                spr = spr + 1;
-                dar = spr + 1;
-                cs = 1'b1;
-                we = 1'b0;
-                address = dar;
-                next_state = S_SUB_2;
+                op_2 <= data_in;
+                spr <= spr + 1;
+                dar <= spr + 1;
+                cs <= 1'b1;
+                we <= 1'b0;
+                address <= dar;
+                current_state <= S_SUB_2;
             end
             
             S_SUB_2: begin
-                op_1 = data_in;
-                spr = spr - 1;
-                cs = 1'b1;
-                we = 1'b1;
-                address = spr;
-                data_out = op_1 - op_2;
-                next_state = S_SUB_3;
+                op_1 <= data_in;
+                spr <= spr - 1;
+                cs <= 1'b1;
+                we <= 1'b1;
+                address <= spr;
+                data_out <= op_1 - op_2;
+                current_state <= S_SUB_3;
             end
             
             S_SUB_3: begin
-                we = 1'b0;
-                dar = spr + 1;
-                address = dar;
-                cs = 1'b1;
-                next_state = S_MEM_WAIT;
+                we <= 1'b0;
+                dar <= spr + 1;
+                address <= dar;
+                cs <= 1'b1;
+                current_state <= S_MEM_WAIT;
             end
             
             S_MEM_WAIT: begin
-                dvr = data_in;
-                next_state = S_IDLE;
+                dvr <= data_in;
+                current_state <= S_IDLE;
             end
         endcase
     end
     
-    always @(posedge clk) begin
-        current_state <= next_state;
-        
+    // always @(posedge clk) begin
+    //     current_state <= next_state;
+    // end
+
+    always @(*) begin
         leds[7] <= (spr == 7'b1111111); // EMPTY flag
         leds[6:0] <= dar;
     end
