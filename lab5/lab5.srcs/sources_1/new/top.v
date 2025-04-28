@@ -48,7 +48,7 @@ module top
     wire btnD_singlepress;
 
     // TODO: Check if this is correct
-    wire btns = {btnU_singlepress, btnD_singlepress, btnL_singlepress, btnR_singlepress};
+    wire btns = {btnD_synch, btnR_synch, btnL_singlepress, btnU_singlepress};
     
     // CHANGE THESE TWO LINES
     assign data_bus = (we ? data_out_ctrl : 8'bz);    // 1st driver of the data bus -- tri state switches
@@ -56,8 +56,10 @@ module top
     assign data_bus = (!we ? data_out_mem : 8'bz);    // 2nd driver of the data bus -- tri state switches
                             // function of we and data_out_mem
     
+    wire dummy;
+    
     controller ctrl(clk, cs, we, addr, data_bus, data_out_ctrl,
-        btns, sw, leds, segs, an);
+        btns, sw, leds, dummy, dummy);
     
     memory mem(clk, cs, we, addr, data_bus, data_out_mem);
     
@@ -71,9 +73,14 @@ module top
     always @(posedge clk) begin
         if(clock_count >= CLOCKS_PER_50MS) begin
             debounce_clk <= 1;
-            clock_count <= 0;
         end else begin
             debounce_clk <= 0;
+        end
+
+        if(clock_count >= (2 * CLOCKS_PER_50MS)) begin
+            clock_count <= 0;
+        end
+        else begin
             clock_count <= clock_count + 1;
         end
     end

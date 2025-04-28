@@ -22,7 +22,7 @@
 
 module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, segs, an);
     input clk;
-    output cs;
+    output reg cs;
     output reg we;
     output reg [6:0] address;
     input[7:0] data_in;
@@ -30,25 +30,23 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
     input[3:0] btns;
     input[7:0] swtchs;
     output[7:0] leds;
-    output[6:0] segs;
+    input [6:0] segs;
     output[3:0] an;
     
     //WRITE THE FUNCTION OF THE CONTROLLER
     reg [6:0] spr;  // next free address past the top of the stack
     reg [6:0] dar;  // address of data that should be displayed on the output
     reg [7:0] dvr;  // value that should be displayed on the output
-    reg EMPTY;      // empty flag
+    reg EMPTY = 1;      // empty flag
 
-    reg input_en; // Disallow inputs while operations are happening
+    reg input_en = 1; // Disallow inputs while operations are happening
 
     // For operation state machine
-    reg [3:0] current_state;
-    reg [3:0] next_state;
+    reg [3:0] current_state = S_IDLE;
+    reg [3:0] next_state = S_IDLE;
     
     // Get Input and handle it
     always @(posedge clk) begin
-        current_state <= next_state;
-
         if(input_en) begin
             case(btns[3:2])
                 2'b00 : begin                   // PUSH/POP MODE
@@ -56,6 +54,8 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
                         current_state <= S_POP_START;
                     end else if (btns[0]) begin // enter/push
                         current_state <= S_PUSH_START;
+                    end else begin
+                        current_state <= S_IDLE;
                     end
                 end
                 2'b01 : begin                   // ADD/SUBTRACT MODE
@@ -67,11 +67,7 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
                 end
                 2'b10 : begin                   // CLEAR/TOP MODE
                     if (btns[1]) begin          // clear/RST
-                        spr <= 2'h7F;
-                        dar <= 2'h00;
-                        dvr <= 2'h00;
-                        EMPTY <= 1'b1;
-                        current_state <= S_IDLE;
+                        current_state <= S_RESET;
                     end else if (btns[0]) begin // top
                         current_state <= S_TOP_START;
                     end
@@ -85,9 +81,13 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
                 end
             endcase
         end
+        else begin
+            current_state <= next_state;
+        end
     end
 
     // State machine for functionality
+    localparam S_RESET = 13;
     localparam S_IDLE = 0;
     localparam S_PUSH_START = 1;
     localparam S_POP_START = 2;
@@ -107,8 +107,17 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
     reg op_1;
     reg op_2;
 
-    always @(*) begin
+    always @(posedge clk) begin
         case(current_state)
+            S_RESET: begin
+                spr <= 2'h7F;
+                dar <= 2'h00;
+                dvr <= 2'h00;
+                EMPTY <= 1'b1;
+
+                next_state <= S_IDLE;
+            end
+            
             S_IDLE: begin
                 next_state <= S_IDLE;
                 input_en <= 1'b1;
@@ -229,5 +238,6 @@ module controller(clk, cs, we, address, data_in, data_out, btns, swtchs, leds, s
     end
 
     assign leds[7] = EMPTY;
+    assign leds[6:0] = data_in[6:0]; // TODO check?
     
 endmodule
