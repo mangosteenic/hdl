@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 03/26/2025 07:00:08 PM
+// Create Date: 03/30/2025 03:58:03 PM
 // Design Name: 
-// Module Name: memory
+// Module Name: clk_div
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,19 +20,24 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module memory(clock, cs, we, address, data_in, data_out);
-input clock;
-input cs;
-input we;
-input[6:0] address;
-input[7:0] data_in;
-output[7:0] data_out;
-reg[7:0] data_out;
-reg[7:0] RAM[0:127];
-always @ (negedge clock)
-begin
-if(we == 1)
-    RAM[address] <= data_in[7:0];
-data_out <= RAM[address];
-end
+module clk_div(
+    input in_clk,
+    output reg out_clk
+    );
+    
+    reg [25:0] count;
+    
+    always @ (posedge in_clk)
+    begin
+        count<=count+1;
+        if (count>=25000000)
+        begin
+            out_clk<=~out_clk;
+            count<=0;
+        end
+    end
+    
+    
+    
+    
 endmodule

@@ -88,25 +88,30 @@ begin
  end
  5'b00101: begin //add
     register0=data_in;
+    
+    address=current_spr+1;
+    stack_ptr=current_spr+1;
    
  
  end
  5'b00110: begin //add
-    address=current_spr+1;
-    stack_ptr=current_spr+1;
+
  
     register1=data_in;
+        data_out=current_reg0+current_reg1;
+            dvr=current_reg0+current_reg1;
+                  address=current_spr;
   
     
  end
  5'b00111: begin //add
     //address<=stack_ptr;
-      address=current_spr;
+
     stack_ptr=current_spr-1;
     we=1;
-    data_out=current_reg0+current_reg1;
+
     dar=current_dar+1;
-    dvr=current_reg0+current_reg1;
+
     //stack_ptr<=stack_ptr-1;
  end
  
@@ -118,26 +123,27 @@ begin
  end
  5'b01001: begin //sub
     register0=data_in;
-
+     address=current_spr+1;
+    stack_ptr=current_spr+1;
    
  end
  5'b01010: begin //sub
-     address=current_spr+1;
-    stack_ptr=current_spr+1;
+
  
     register1=data_in;
-
+    data_out=current_reg1-current_reg0;
+    dvr=current_reg1-current_reg0;
+         address=current_spr;
     
  end
  5'b01011: begin //sub
-     address=current_spr;
     stack_ptr=current_spr-1;
  
     we=1;
     // address<=stack_ptr;
-    data_out=current_reg1-current_reg0;
+
     dar=current_dar+1;
-    dvr=current_reg1-current_reg0;
+
    // stack_ptr<=stack_ptr+1;
  end
   5'b01100: begin //top
