@@ -3,7 +3,7 @@ module clk_div(clk100Mhz, slowClk);
   output slowClk; //slow clock
 
   reg[27:0] counter;
-  assign slowClk= counter[27];  //(2^27 / 100E6) = 1.34seconds
+  assign slowClk= counter[22];  //(2^27 / 100E6) = 1.34seconds
 
   initial begin
     counter = 0;

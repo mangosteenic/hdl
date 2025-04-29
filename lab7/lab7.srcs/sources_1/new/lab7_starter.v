@@ -121,7 +121,7 @@ module Memory(CS, WE, CLK, ADDR, Mem_Bus);
   initial
   begin
     /* Write your Verilog-Text IO code here */
-    $readmemh("/home/p7810456/ECE460MPartnerLabs/lab7/lab7.srcs/sources_1/new/MIPS_Instruction.txt", RAM, 0, 127);
+    $readmemh("/home/p7810456/Class/HDL_Partner_Labs_ECE460M/lab7/lab7.srcs/sources_1/new/MIPS_Instruction.txt", RAM, 0, 127);
   end
 
   assign Mem_Bus = ((CS == 1'b0) || (WE == 1'b1)) ? 32'bZ : data_out;
@@ -210,6 +210,7 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, reg1);
 
   //non-special instructions, values of opcodes:
   parameter addi = 6'b001000;
+  parameter addiu = 6'b001001;
   parameter andi = 6'b001100;
   parameter ori = 6'b001101;
   parameter lw = 6'b100011;
@@ -282,7 +283,7 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, reg1);
             op = add;
             alu_or_mem = 1;
           end
-          else if ((`opcode == lw)||(`opcode == sw)||(`opcode == addi)) op = add;
+          else if ((`opcode == lw)||(`opcode == sw)||(`opcode == addi)||(`opcode == addiu)) op = add;
           else if ((`opcode == beq)||(`opcode == bne)) begin
             op = sub;
             reg_or_imm = 0;
@@ -313,7 +314,7 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus, reg1);
       end
       3: begin //prepare to write to mem
         nstate = 3'd0;
-        if ((format == R)||(`opcode == addi)||(`opcode == andi)||(`opcode == ori)) regw = 1;
+        if ((format == R)||(`opcode == addi)||(`opcode == andi)||(`opcode == ori)||(`opcode == addiu)) regw = 1;
         else if (`opcode == sw) begin
           CS = 1;
           WE = 1;
