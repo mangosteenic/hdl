@@ -48,6 +48,11 @@ module top
     
     wire [3:0] btns;
     assign btns = {btnD_synch, btnR_synch, btnL_singlepress, btnU_singlepress};
+
+    reg clk_50mhz = 0;
+    always @(posedge clk) begin
+        clk_50mhz <= ~clk_50mhz;
+    end
     
     //CHANGE THESE TWO LINES
     assign data_bus = (we ? data_out_ctrl : 8'bz);  // 1st driver of the data bus -- tri state switches
@@ -55,11 +60,11 @@ module top
     assign data_bus = (!we ? data_out_mem : 8'bz);  // 2nd driver of the data bus -- tri state switches
                                                     // function of we and data_out_mem
                                                     
-    controller ctrl(clk, cs, we, addr, data_bus, data_out_ctrl,
+    controller ctrl(clk_50mhz, cs, we, addr, data_bus, data_out_ctrl,
         btns, swtchs, leds, segs, an);
     
-    memory mem(clk, cs, we, addr, data_bus, data_out_mem);
-    
+    memory mem(clk_50mhz, cs, we, addr, data_bus, data_out_mem);
+
     //add any other functions you need
     //(e.g. debouncing, multiplexing, clock-division, etc)
     
@@ -68,12 +73,17 @@ module top
     reg debounce_clk = 0;
     reg [31:0] clock_count = 0;
     always @(posedge clk) begin
+        clock_count <= clock_count + 1;
+
         if(clock_count >= CLOCKS_PER_50MS) begin
             debounce_clk <= 1;
-            clock_count <= 0;
-        end else begin
+        end
+        else begin
             debounce_clk <= 0;
-            clock_count <= clock_count + 1;
+        end
+
+        if(clock_count >= (2 * CLOCKS_PER_50MS)) begin
+            clock_count <= 0;
         end
     end
        
@@ -109,14 +119,14 @@ module top
     // Single pulse generation
     // BtnU
     reg btnU_sp_temp = 0;
-    always @(posedge clk) begin
+    always @(posedge clk_50mhz) begin
         btnU_sp_temp <= btnU_synch;
     end
     assign btnU_singlepress = (~btnU_sp_temp) & btnU_synch;
     
     // BtnL
     reg btnL_sp_temp = 0;
-    always @(posedge clk) begin
+    always @(posedge clk_50mhz) begin
         btnL_sp_temp <= btnL_synch;
     end
     assign btnL_singlepress = (~btnL_sp_temp) & btnL_synch;
@@ -126,12 +136,17 @@ module top
     reg display_clk = 0;
     reg [31:0] clk_cnt = 0;
     always @(posedge clk) begin
+        clk_cnt <= clk_cnt + 1;
+
         if(clk_cnt >= CLOCKS_PER_DISP) begin
             display_clk <= 1;
-            clk_cnt <= 0;
-        end else begin
+        end
+        else begin
             display_clk <= 0;
-            clk_cnt <= clk_cnt + 1;
+        end
+
+        if(clk_cnt >= (2 * CLOCKS_PER_DISP)) begin
+            clk_cnt <= 0;
         end
     end
     
@@ -146,7 +161,7 @@ module top
     assign an = an_int;
     
     reg s = 0;
-    always @(posedge clk) begin 
+    always @(posedge clk_50mhz) begin 
         case(s)
             0: begin
                 s <= 1;
