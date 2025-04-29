@@ -51,7 +51,7 @@ module MIPS_Testbench ();
         @(posedge WE); // When a store word is executed
         @(negedge CLK);
         if (Mem_Bus != expected[i])
-            $display("Output mismatch: got %d, expect %d", Mem_Bus_Wire, expected[i]);
+            $display("Output mismatch: got %d, expect %d", Mem_Bus, expected[i]);
  end
 
     $display("TEST COMPLETE");
@@ -190,7 +190,7 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus);
   parameter bne = 6'b000101;
   parameter j = 6'b000010;
   // New for Lab 7
-  parameter jal = 6'000011;
+  parameter jal = 6'b000011;
   parameter lui = 6'b000010;
   parameter rbit = 6'b000010;
   parameter rev = 6'b000010;
@@ -263,8 +263,8 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus);
             reg_or_imm = 0;
             alu_or_mem = 0;
             // $31 = PC + 1
-            dr = 5'b11111; // $31
-            reg_in = pc + 7'd1; // PC + 1
+//            dr = 5'b11111; // $31
+//            reg_in = pc + 7'd1; // PC + 1
           end
         end
         else if (format == R) //register instructions
@@ -282,11 +282,11 @@ module MIPS (CLK, RST, CS, WE, ADDR, Mem_Bus);
           end
           else if (`opcode == andi) op = and1;
           else if (`opcode == ori) op = or1;
-          else if (`opcode = lui) begin
+          else if (`opcode == lui) begin
             op = lui;
             reg_or_imm = 1;
             alu_or_mem = 0;
-            dr = `sr2;
+//            dr = `sr2;
           end
         end
       end
