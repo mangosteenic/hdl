@@ -21,7 +21,7 @@
 
 
 module top
-    #(parameter CLOCKS_PER_50MS = 5000000)
+    #(parameter CLOCKS_PER_25MS = 5000000) // Original: 2500000
     (clk, btnU, btnL, btnR, btnD, sw, leds, segs, an);
     input clk;
     // input[3:0] btns;
@@ -30,7 +30,7 @@ module top
     input btnR;
     input btnD;
     input[7:0] sw;
-    output[7:0] leds;
+    output[15:0] leds;
     output reg [6:0] segs;
     output reg [3:0] an;
     
@@ -48,20 +48,21 @@ module top
     wire btnD_singlepress;
 
     // TODO: Check if this is correct
-    wire btns = {btnD_synch, btnR_synch, btnL_singlepress, btnU_singlepress};
+    wire [3:0] btns = {btnD_synch, btnR_synch, btnL_singlepress, btnU_singlepress};
+    assign leds[11:8] = btns;
     
     // CHANGE THESE TWO LINES
-    assign data_bus = (we ? data_out_ctrl : 8'bz);    // 1st driver of the data bus -- tri state switches
+    assign data_bus = (we ? data_out_ctrl : data_out_mem);    // 1st driver of the data bus -- tri state switches
                             // function of we and data_out_ctrl
-    assign data_bus = (!we ? data_out_mem : 8'bz);    // 2nd driver of the data bus -- tri state switches
+    // assign data_bus = (!we ? data_out_mem : 8'bz);    // 2nd driver of the data bus -- tri state switches
                             // function of we and data_out_mem
     
     wire dummy;
+    wire [3:0] state;
+    controller ctrl(debounce_clk, cs, we, addr, data_bus, data_out_ctrl,
+        btns, sw, leds[7:0], dummy, state);
     
-    controller ctrl(clk, cs, we, addr, data_bus, data_out_ctrl,
-        btns, sw, leds, dummy, dummy);
-    
-    memory mem(clk, cs, we, addr, data_bus, data_out_mem);
+    memory mem(disp_clk[15], cs, we, addr, data_bus, data_out_mem);
     
     // add any other functions you need
     // (e.g. debouncing, multiplexing, clock-division, etc)
@@ -70,14 +71,18 @@ module top
     // Clock divider for 50ms
     reg debounce_clk = 0;
     reg [31:0] clock_count = 0;
+
+    // assign leds[12] = debounce_clk;
+    assign leds[15:12] = state; // Current state of the controller
+
     always @(posedge clk) begin
-        if(clock_count >= CLOCKS_PER_50MS) begin
+        if(clock_count >= CLOCKS_PER_25MS) begin
             debounce_clk <= 1;
         end else begin
             debounce_clk <= 0;
         end
 
-        if(clock_count >= (2 * CLOCKS_PER_50MS)) begin
+        if(clock_count >= (2 * CLOCKS_PER_25MS)) begin
             clock_count <= 0;
         end
         else begin
@@ -122,40 +127,45 @@ module top
     // BtnU
     
     reg btnU_sp_temp = 0;
-    always @(posedge clk) begin
+    always @(posedge debounce_clk) begin
         btnU_sp_temp <= btnU_synch;
     end
     assign btnU_singlepress = (~btnU_sp_temp) & btnU_synch;
 
     // BtnL
     reg btnL_sp_temp = 0;
-    always @(posedge clk) begin
+    always @(posedge debounce_clk) begin
         btnL_sp_temp <= btnL_synch;
     end
     assign btnL_singlepress = (~btnL_sp_temp) & btnL_synch;
 
     // BtnR
     reg btnR_sp_temp = 0;
-    always @(posedge clk) begin
+    always @(posedge debounce_clk) begin
         btnR_sp_temp <= btnR_synch;
     end
     assign btnR_singlepress = (~btnR_sp_temp) & btnR_synch;
 
     // BtnD
     reg btnD_sp_temp = 0;
-    always @(posedge clk) begin
+    always @(posedge debounce_clk) begin
         btnD_sp_temp <= btnD_synch;
     end
     assign btnD_singlepress = (~btnD_sp_temp) & btnD_synch;
 
     wire [6:0] in0, in1;
 
-    hexto7segment c1 (.x(data_out_ctrl[3:0]), .r(in0));
-    hexto7segment c2 (.x(data_out_ctrl[7:4]), .r(in1));
+    hexto7segment c1 (.x(data_bus[3:0]), .r(in0));
+    hexto7segment c2 (.x(data_bus[7:4]), .r(in1));
 
     // multiplexing
     reg s;
+    reg [31:0] disp_clk = 0;
     always @(posedge clk) begin
+        disp_clk <= disp_clk + 1;
+    end
+
+    always @(posedge disp_clk[15]) begin
         case(s)
             0: begin
                 s <= 1;
